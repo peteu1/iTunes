@@ -32,7 +32,8 @@ class Processor:
     def get_df(self, idx):
         """ Gets the abbreviated version of the df at idx """
         if idx < len(self.dfs):
-            return self.dfs[idx][['Artist', 'Album', 'Name']]
+            return self.dfs[idx][['Name', 'Artist', 'Album']]
+        print("df out of range!")
         return None
     
     
@@ -55,11 +56,11 @@ class Processor:
     def remove(self, playlist_name):
         if len(self.playlists) == 0:
             print("Nothing to remove")
-            return -1
+            return -1, False
         
         if playlist_name not in self.playlists:
             print(playlist_name, "not in viewer")
-            return -1
+            return -1, False
         
         # Get original index (0 or 1) of playlist removed
         idx = 0 if self.playlists[0] == playlist_name else 1

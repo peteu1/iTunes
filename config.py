@@ -8,12 +8,12 @@ Created on Tue Apr 23 21:59:30 2019
 import os
 from datetime import datetime
 
-width = 500
-height = 600
+width = 600
+height = 700
 size = "{}x{}".format(str(width), str(height))
 
 # path to where all the playlist .txt's are stored (relative)
-playlists_path = 'playlists'
+playlists_path = 'playlists'  # TODO: Get this dynamically (settings panel?)
 
 def get_playlist_names():
     """ Gets names of all playlists in playlists_path """

@@ -26,6 +26,7 @@ class Main_GUI:
         self.topFrame = tk.Frame(self.root)  # invisible container
         self.topFrame.pack(side=tk.TOP)  # pack it in wherever
         self.tree = None
+        self.selection = None # Currently selected item in treeview
         self.init_topFrame()
         
         # Frame with instructions and add button to add playlists to summary
@@ -40,8 +41,10 @@ class Main_GUI:
     
         # Initialize mainFrame GUI
         self.mainFrame = tk.Frame(self.root)
-        self.mainFrame.pack(side=tk.TOP, fill=tk.X)
-        # TODO: Re-work the playlist frames
+        self.mainFrame.grid_columnconfigure(0, weight=1, uniform="group1")
+        self.mainFrame.grid_columnconfigure(1, weight=1, uniform="group1")
+        self.mainFrame.grid_rowconfigure(0, weight=1)
+        self.mainFrame.pack(side=tk.TOP, fill=tk.X, expand=1, anchor=tk.N)
         self.playlist_frames = [self.create_playlist_frame(0),
                                 self.create_playlist_frame(1)]
         
@@ -66,32 +69,35 @@ class Main_GUI:
     
     def add(self):
         """ Passes current selection to processor & updates GUI """
-        selection = self.tree.item(self.tree.selection()[0])['values'][0]
-        df, playlist_num = self.processor.add(selection)  # record the add
+        df, playlist_num = self.processor.add(self.selection)  # record the add
         if df is None:
             return None
         #print(df.head())
         print("num:", playlist_num)
         
         self.update_playlist_frame(playlist_num)
-        
+    
+    
+    def tree_select_event(self, event):
+        item_iid = self.tree.selection()[0]
+        self.selection = self.tree.item(item_iid)['values'][0]
+    
     
     def remove(self):
         """ Removes selected playlist from viewer if exists """
-        selection = self.tree.item(self.tree.selection()[0])['values'][0]
-        playlist_num, shift = self.processor.remove(selection)
-        
+        playlist_num, shift = self.processor.remove(self.selection)
+
         # Ensure valid remove
         if playlist_num == -1:
             return False
         
         # Reset frame removed
-        self.playlist_frames[playlist_num].pack_forget()
+        self.playlist_frames[playlist_num].grid_forget()
         
         # Check if need to shift playlist on right to left
         if shift:
             # Right exists, move frame to left
-            self.playlist_frames[1].pack_forget()  # delete right
+            self.playlist_frames[1].grid_forget()  # delete right
             self.update_playlist_frame(0)  # Add to left (processor has info)
         return True
     
@@ -114,10 +120,12 @@ class Main_GUI:
     
     def refresh(self):
         # Reset playlist name fields
-        self.playlist_frames = [self.create_playlist_frame(1),
-                                self.create_playlist_frame(2)]
-        self.init_topFrame()  # Reload topFrame in case folder changed
+#        self.playlist_frames = [self.create_playlist_frame(1),
+#                                self.create_playlist_frame(2)]
+#        self.init_topFrame()  # Reload topFrame in case folder changed
         self.processor.refresh()
+        self.root.destroy()
+        self.__init__(self.processor)
     
     
 # =============================================================================
@@ -132,12 +140,32 @@ class Main_GUI:
         playlist_name = self.processor.playlists[playlist_num]
         label_text = "Playlist {}: {}".format(int(playlist_num + 1), playlist_name)
         label = tk.Label(self.playlist_frames[playlist_num], text=label_text)
-        label.pack(side=tk.LEFT)
+        label.pack(side=tk.TOP)
         
-        # TODO: Add playlist info to main frame GUI by updating text frames
+        # Add tree to display playlist info to playlist frame & make scrollable
+        tree = ttk.Treeview(self.playlist_frames[playlist_num], selectmode='browse')
+        tree.pack(side='left')
+        vsb = ttk.Scrollbar(self.playlist_frames[playlist_num], 
+                            orient="vertical", command=tree.yview)
+        vsb.pack(side='right', fill='y')
+        tree.configure(yscrollcommand=vsb.set)
         
-        # TODO: Make scrollable
-    
+        # Populate tree
+        tree["columns"] = ("1", "2", "3")
+        tree['show'] = 'headings'
+        tree.column("1", width=100, anchor='c')
+        tree.column("2", width=80, anchor='c')
+        tree.column("3", width=80, anchor='c')
+        tree.heading("1", text="Song")
+        tree.heading("2", text="Artist")
+        tree.heading("3", text="Album")
+        
+        # Get dataframe from processor, loop through rows & add
+        df = self.processor.get_df(playlist_num)
+        for _, row in df.iterrows():
+            values = tuple([a if type(a) is not float else "" for a in list(row)])
+            tree.insert("", 'end', text="L1", values=values)
+        
     
     def display_help(self):
         print("display_help not implemented")
@@ -154,9 +182,9 @@ class Main_GUI:
         # TODO MAYBE: Don't return frame, return empty tk.Text()
         
         frame = tk.Frame(self.mainFrame)
-        orient_frame = tk.LEFT if frame_number == 0 else tk.RIGHT
-        frame.pack(side=orient_frame)  #grid(row=0, column=(frame_number-1))
-        
+        #orient_frame = tk.LEFT if frame_number == 0 else tk.RIGHT
+        #frame.pack(side=orient_frame)
+        frame.grid(row=0, column=frame_number, sticky="nsew")
         # TODO: Make frame width equal to half of the screen width
         return frame
     
@@ -178,7 +206,7 @@ class Main_GUI:
             self.tree.insert("", tk.END, values=(name, size, date))
         
         self.tree.pack(side=tk.TOP, fill=tk.X)
-        self.tree.bind('<<TreeviewSelect>>')
+        self.tree.bind('<<TreeviewSelect>>', self.tree_select_event)
         
     
     def init_addFrame(self):
