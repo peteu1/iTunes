@@ -10,8 +10,6 @@ from GUI import Main_GUI
 import config
 
 # Import modules
-import tkinter as tk
-import os
 import pandas as pd
 
 
@@ -19,11 +17,8 @@ class Processor:
     
     def __init__(self):
         self.running = True
-        self.checked = False
-        
         self.playlists = []
         self.dfs = []
-    
     
 # =============================================================================
 #     Getter methods
@@ -81,59 +76,62 @@ class Processor:
             return False
         
         if output_name == "":
+            # TODO: Use default name; Need how joined, then can use in name
+#            fpath = "output\\{}"  # TODO: Move to config
+#            p1_name = p1.split('.')[0]
+#            p2_name = p2.split('.')[0]
+#            out_name = 'output\\{}{}{}.csv'
+#            df.to_csv(out_name.format(p1_name, '+', p2_name), index=False)
+#            df1_unique.to_csv(out_name.format(p1_name, '-', p2_name), index=False)
+#            df2_unique.to_csv(out_name.format(p2_name, '-', p1_name), index=False)
             print("Save as name not valid")
             return False
         
         # TODO: Must also have output to save, i.e. compare has been called
         
-        print('Saving playlist to:', output_name)
         print("!!save not fully implemented")
-        return True
+        #print('Saving playlist to:', output_name)
+        return output_name
     
     
     def compare(self, how='inner'):
-        
         # Ensure valid compare
         valid = self._verify()
         if not valid:
             print("Need 2 playlists to compare")
-            return False
+            return None
         
+        print("Compare type:", how)
         p1 = self.playlists[0]
         p2 = self.playlists[1]
-        
         df1 = self.dfs[0]
         df2 = self.dfs[1]
-        
-        # TODO: Use how to determine how to compare (how to slice df)
-        
+                
         # TODO: Give another button to show stats about duplicates (popout?)
-        # TODO: Or do this automatically upon self.add()
-        # Get what is unique in playlist_1
-        df1_unique = self.get_unique(df1, df2)
-        print("\nnum unique in {}: {}, total length: {}"
-              .format(p1, len(df1_unique), len(df1)))
-        # TODO: Try not dropping index and use it to index df1_full
         
-        # Get what is unique in playlist_2
-        df2_unique = self.get_unique(df2, df1)
-        print("\nnum unique in {}: {}, total length: {}"
-              .format(p2, len(df2_unique), len(df2)))
+        if how == 'left':
+            # Get what is unique in playlist_1
+            df1_unique = self.get_unique(df1, df2)
+            print("\nnum unique in {}: {}, total length: {}"
+                  .format(p1, len(df1_unique), len(df1)))
+            # TODO: Try not dropping index and use it to index df1_full
+            return df1_unique
         
-        # Outer join
-        df = df1.append(df2).reset_index(drop=True)
-        df.drop_duplicates(inplace=True)
-        print("Total unique:", len(df))
+        if how == 'right':
+            # Get what is unique in playlist_2
+            df2_unique = self.get_unique(df2, df1)
+            print("\nnum unique in {}: {}, total length: {}"
+                  .format(p2, len(df2_unique), len(df2)))
+            return df2_unique
         
+        if how == 'outer':
+            # Outer join
+            df = df1.append(df2).reset_index(drop=True)
+            df.drop_duplicates(inplace=True)
+            print("Total unique:", len(df))
         
-        # TODO: Move to save
-#        fpath = "playlists\\{}"
-#        p1_name = p1.split('.')[0]
-#        p2_name = p2.split('.')[0]
-#        out_name = 'output\\{}{}{}.csv'
-#        df.to_csv(out_name.format(p1_name, '+', p2_name), index=False)
-#        df1_unique.to_csv(out_name.format(p1_name, '-', p2_name), index=False)
-#        df2_unique.to_csv(out_name.format(p2_name, '-', p1_name), index=False)
+        else:  # if how == 'inner'
+            df = df1.merge(df2, how='inner')  # TODO: Debug
         
         return df
         
@@ -141,11 +139,6 @@ class Processor:
     def refresh(self):
         self.__init__()
         
-    
-#    def toggle_checked(self):
-#        print("toggle_checked called")
-#        self.checked = not self.checked
-    
     
 # =============================================================================
 #     Logic methods
