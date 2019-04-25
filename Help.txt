@@ -1,0 +1,33 @@
+------------------------- Getting started -------------------------
+
+To get started: Set up a directory to store playlists, you will need
+to make sure that the playlists_path is pointing to this directory.
+
+The playlists are all stored as tab-delimited text files, which can 
+be generated from iTunes with:
+   File > Library > Export Playlist...
+
+Save your playlist like this into your playlist_path and you're 
+ready to use the application.
+
+Note: Once this is done correctly you may need to hit 'refresh'. 
+You should see your playlists at the top.
+
+
+---------------------- Using the application ----------------------
+
+1. Select a playlist from the top and press the 'Add' button.
+
+2. Repeat with a second playlist that you would like to compare to
+the first. (If you want to remove one from consideration, 
+highlight the playlist from the top and click 'Remove').
+
+3. Choose how you would like to combine the playlists using the 
+radio buttons at the bottom and click 'Compare'.
+
+4. A window with the result will appear with the resulting merge, 
+you can enter a name and click 'save' to save it as a new playlist.
+The resulting text file will appear in the output directory.
+
+5. To import to iTunes, select File > Library > Export Playlist... 
+from iTunes, then navigate to the file in your output folder.

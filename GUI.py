@@ -61,6 +61,7 @@ class Main_GUI:
         # Bottom frame contains the buttons: refresh, compare, help
         self.bottomFrame = tk.Frame(self.root)
         self.bottomFrame.pack(side=tk.BOTTOM)  # pack it in on bottom
+        self.help_window = None; self.compare_viewer = None
         self.init_bottomFrame()
         
         # Infinite loop to keep window up until closed
@@ -114,8 +115,10 @@ class Main_GUI:
         selection = config.merge_types.get(self.radioVar.get())
         df = self.processor.compare(selection)
         if df is not None:
-            print('comapre GUI not implement')
-            # TODO: Update Comparison Viewer GUI
+            # Update Comparison Viewer GUI
+            self.launch_compare_viewer(df)
+            # TODO: If self.compare_viewer is not None, update instead of restarting
+            
         
     
     def refresh(self):
@@ -149,29 +152,73 @@ class Main_GUI:
                             orient="vertical", command=tree.yview)
         vsb.pack(side='right', fill='y')
         tree.configure(yscrollcommand=vsb.set)
+        # TODO: Fix tree dimensions
         
-        # Populate tree
+        # Get dataframe from processor & populate tree
+        df = self.processor.get_df(playlist_num)
+        col_widths = [100, 80, 80]
+        self.populate_tree(tree, df, col_widths)
+        
+    
+    def populate_tree(self, tree, df, col_widths):
         tree["columns"] = ("1", "2", "3")
         tree['show'] = 'headings'
-        tree.column("1", width=100, anchor='c')
-        tree.column("2", width=80, anchor='c')
-        tree.column("3", width=80, anchor='c')
+        tree.column("1", width=col_widths[0], anchor='c')
+        tree.column("2", width=col_widths[1], anchor='c')
+        tree.column("3", width=col_widths[2], anchor='c')
         tree.heading("1", text="Song")
         tree.heading("2", text="Artist")
         tree.heading("3", text="Album")
         
-        # Get dataframe from processor, loop through rows & add
-        df = self.processor.get_df(playlist_num)
+        # loop through rows & add
         for _, row in df.iterrows():
             values = tuple([a if type(a) is not float else "" for a in list(row)])
             tree.insert("", 'end', text="L1", values=values)
+    
+    
+    def launch_compare_viewer(self, df):
+        self.compare_viewer = tk.Toplevel(self.root)
+        self.compare_viewer.geometry("560x400")
+        close_button = tk.Button(self.compare_viewer, text="Close", fg="red", 
+                                 command=self.close_compare)
+        close_button.pack(side=tk.TOP)
         
+        # Add tree to display playlist info to playlist frame & make scrollable
+        tree = ttk.Treeview(self.compare_viewer, selectmode='browse')
+        tree.pack(side='left', fill='y')
+        vsb = ttk.Scrollbar(self.compare_viewer, orient="vertical", command=tree.yview)
+        vsb.pack(side='right', fill='y')
+        tree.configure(yscrollcommand=vsb.set)
+        # TODO: Fix tree dimensions
+        
+        # Populate tree
+        col_widths = [200, 120, 140]
+        self.populate_tree(tree, df, col_widths)
+    
     
     def display_help(self):
-        print("display_help not implemented")
-        # TODO: Popout?
+        # Initialize popout window and close button
+        self.help_window = tk.Toplevel(self.root)
+        self.help_window.geometry("560x400")
+        close_button = tk.Button(self.help_window, text="Close", fg="red", 
+                                 command=self.close_help)
+        close_button.pack(side=tk.BOTTOM)
+        
+        # Write text
+        text = tk.Text(self.help_window)
+        text.pack()
+        f = open("help.txt", "r")
+        help_text = f.read()
+        text.insert('end', help_text)
+        text.configure(state=tk.DISABLED)
     
     
+    def close_help(self):
+        self.help_window.destroy()
+    
+    def close_compare(self):
+        self.compare_viewer.destroy()
+        
 # =============================================================================
 #     GUI Initializers
 # =============================================================================
@@ -179,13 +226,9 @@ class Main_GUI:
     
     def create_playlist_frame(self, frame_number):
         """ frame_number is 0 for left, 1 for right """
-        # TODO MAYBE: Don't return frame, return empty tk.Text()
-        
         frame = tk.Frame(self.mainFrame)
-        #orient_frame = tk.LEFT if frame_number == 0 else tk.RIGHT
-        #frame.pack(side=orient_frame)
+        # Make frame width equal to half of the screen width
         frame.grid(row=0, column=frame_number, sticky="nsew")
-        # TODO: Make frame width equal to half of the screen width
         return frame
     
     
