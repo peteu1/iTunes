@@ -8,8 +8,9 @@ Created on Tue Apr 23 21:59:30 2019
 import os
 from datetime import datetime
 
-
-size = "500x500"
+width = 500
+height = 600
+size = "{}x{}".format(str(width), str(height))
 
 # path to where all the playlist .txt's are stored (relative)
 playlists_path = 'playlists'
@@ -25,3 +26,5 @@ def get_playlist_names():
     return names, kbs, dates
 
 
+# Converts radio button value to merge type str
+merge_types = {0: 'inner', 1: 'outer', 2: 'left', 3: 'right'}
