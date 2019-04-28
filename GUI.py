@@ -33,11 +33,6 @@ class Main_GUI:
         self.addFrame = tk.Frame(self.root)
         self.addFrame.pack(side=tk.TOP)
         self.init_addFrame()
-        
-        # Save frame for entering new playlist name & saving to file
-        self.saveFrame = tk.Frame(self.root)
-        self.saveFrame.pack(side=tk.TOP)
-        self.init_saveFrame()
     
         # Initialize mainFrame GUI
         self.mainFrame = tk.Frame(self.root)
@@ -54,13 +49,8 @@ class Main_GUI:
         self.help_window = None; self.compare_viewer = None
         self.init_buttonFrame()
         
-        # Bottom frame holds radio button frame and venn diagram
-        self.bottomFrame = tk.Frame(self.root)
-        self.bottomFrame.pack(side=tk.BOTTOM)
-        
-        self.radioFrame = None; self.radioVar = None
-        self.venn_frame = None; self.venn_canvas = None
-        self.init_bottomFrame()
+        # Class to control the compare window
+        self.comparator = Comparator(self.root, self.processor)
         
         # Infinite loop to keep window up until closed
         self.root.mainloop()
@@ -105,27 +95,11 @@ class Main_GUI:
         return True
     
     
-    def save(self):
-        # Helper function to gather the names to pass to the processor
-        output_name = self.new_name.get()
-        # TODO: Pass names of playlists 1 and 2
-        self.processor.save(output_name)
-    
-    
     def compare(self):
-        selection = config.merge_types.get(self.radioVar.get())
-        df = self.processor.compare(selection)
-        if df is not None:
-            # Get specs about the comparison
-            playlist_names = self.processor.playlists
-            specs = "Merge Type: {} |  Playlist 1: {} | Playlist 2: {}".format(
-                    selection, playlist_names[0], playlist_names[1])
+        if self.processor._verify():
             # Update Comparison Viewer GUI
-            self.launch_compare_viewer(df, specs)
+            self.comparator.launch_compare_viewer()
             # TODO: If self.compare_viewer is not None, update instead of restarting
-            # Update Venn diagram
-            self.venn_canvas.pack_forget()
-            self.init_venn_diagram(selection)
         
     
     def refresh(self):
@@ -180,7 +154,7 @@ class Main_GUI:
         # Get dataframe from processor & populate tree
         df = self.processor.get_df(playlist_num)
         col_widths = [100, 80, 80]
-        self.populate_tree(tree, df, col_widths)
+        config.populate_tree(tree, df, col_widths)
         
         # Populate bottom section with statistics about playlist
         stats_frame = tk.Frame(self.playlist_frames[playlist_num])
@@ -189,65 +163,6 @@ class Main_GUI:
         label_2 = tk.Label(stats_frame, text=stats)
         label_2.pack(side=tk.BOTTOM)
     
-    
-    def launch_compare_viewer(self, df, specs):
-        """ df is merged df; specs is merge specifications """
-        # Pop-out a new widget
-        self.compare_viewer = tk.Toplevel(self.root)
-        self.compare_viewer.geometry("560x400")
-        
-        # Initialize top panel for merge specs & close button
-        top_panel = tk.Frame(self.compare_viewer)
-        top_panel.pack(side=tk.TOP)
-        label_1 = tk.Label(top_panel, text=specs)
-        label_1.pack(side=tk.RIGHT)
-        close_button = tk.Button(top_panel, text="Close", fg="red", 
-                                 command=self.close_compare)
-        close_button.pack(side=tk.RIGHT)
-        
-        # Add tree to display playlist info to playlist frame & make scrollable
-        tree_frame = tk.Frame(self.compare_viewer)
-        tree_frame.pack(side=tk.TOP) 
-        tree = ttk.Treeview(tree_frame, selectmode='browse')
-        tree.pack(side='left', fill='y')
-        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
-        vsb.pack(side='right', fill='y')
-        tree.configure(yscrollcommand=vsb.set)
-        # TODO: Fix tree dimensions
-        
-        # Populate tree
-        col_widths = [200, 120, 140]
-        self.populate_tree(tree, df, col_widths)
-        
-        # Populate bottom section with statistics about playlist
-        stats_frame = tk.Frame(self.compare_viewer)
-        stats_frame.pack(side=tk.BOTTOM)
-        stats = self.processor.get_summary_stats(df=df)
-        label_2 = tk.Label(stats_frame, text=stats)
-        label_2.pack(side=tk.BOTTOM)
-    
-    
-    def populate_tree(self, tree, df, col_widths):
-        tree["columns"] = ("1", "2", "3")
-        tree['show'] = 'headings'
-        tree.column("1", width=col_widths[0], anchor='c')
-        tree.column("2", width=col_widths[1], anchor='c')
-        tree.column("3", width=col_widths[2], anchor='c')
-        tree.heading("1", text="Song")
-        tree.heading("2", text="Artist")
-        tree.heading("3", text="Album")
-        
-        # loop through rows & add
-        for _, row in df.iterrows():
-            values = tuple([a if type(a) is not float else "" for a in list(row)])
-            tree.insert("", 'end', text="L1", values=values)
-    
-    
-    def update_venn_diagram(self):
-        how = config.merge_types.get(self.radioVar.get())
-        self.venn_canvas.pack_forget()
-        self.init_venn_diagram(how)
-        
     
     def display_help(self):
         # Initialize popout window and close button
@@ -269,9 +184,6 @@ class Main_GUI:
     def close_help(self):
         self.help_window.destroy()
     
-    def close_compare(self):
-        self.compare_viewer.destroy()
-    
     
 # =============================================================================
 #     GUI Initializers
@@ -291,9 +203,7 @@ class Main_GUI:
         
         self.tree = ttk.Treeview(self.topFrame, columns=config.file_cols, 
                                  show="headings", selectmode="browse")
-        
         # Define headings
-        
         self.tree.heading("#1", text="Playlist Name", anchor=tk.W, command=
                           lambda: self.sort_tree(self.tree, 0, False))
         self.tree.heading("#2", text="Size", anchor=tk.W, command=
@@ -322,18 +232,6 @@ class Main_GUI:
         remove_button.pack(side=tk.LEFT)
     
     
-    def init_saveFrame(self):
-        label_2 = tk.Label(self.saveFrame, text="New playlist name: ")
-        label_2.pack(side=tk.LEFT)
-        
-        self.new_name = tk.Entry(self.saveFrame)
-        self.new_name.pack(side=tk.LEFT)
-        
-        save_button = tk.Button(self.saveFrame, text="Save", fg="red",
-                                command=self.save)
-        save_button.pack(side=tk.LEFT)
-    
-    
     def init_buttonFrame(self):
         button_1 = tk.Button(self.buttonFrame, text="Refresh", fg="red",
                              command=self.refresh)
@@ -347,6 +245,135 @@ class Main_GUI:
         #self.buttonFrame.focus_set()  # Set focus so that binding will work
         
         
+    
+    
+
+class Comparator():
+    
+    def __init__(self, root, processor):
+        self.parent = root
+        self.visible = False
+        self.processor = processor
+        self.root = None
+        self.tree = None
+        self.topLabel = None; self.statsLabel = None
+        self.radioFrame = None; self.radioVar = None
+        self.venn_frame = None; self.venn_canvas = None
+        self.merge_type = config.merge_types.get(0)
+        self.df = None
+        self.saveDisplay = None
+    
+    
+    def launch_compare_viewer(self):
+        """ df is merged df; specs is merge specifications """
+        
+        # Pop-out a new widget
+        self.root = tk.Toplevel(self.parent)
+        self.root.geometry("560x400")
+        self.visible = True
+        
+        # Initialize top panel for merge specs & close button
+        self.top_panel = tk.Frame(self.root)
+        self.top_panel.pack(side=tk.TOP)
+        self.init_topFrame()
+        
+        # Add tree to display playlist info to playlist frame & make scrollable
+        self.treeFrame = tk.Frame(self.root)
+        self.treeFrame.pack(side=tk.TOP) 
+        self.df = self.processor.compare(self.merge_type)
+        self.init_treeFrame()
+        
+        # Populate bottom section with statistics about playlist
+        self.detailsFrame = tk.Frame(self.root)
+        self.detailsFrame.pack(side=tk.TOP)
+        self.init_detailsFrame()
+        
+        # Save frame for entering new playlist name & saving to file
+        self.saveFrame = tk.Frame(self.root)
+        self.saveFrame.pack(side=tk.TOP)
+        self.init_saveFrame()
+        
+        # Bottom frame holds radio button frame and venn diagram
+        self.bottomFrame = tk.Frame(self.root)
+        self.bottomFrame.pack(side=tk.BOTTOM)
+        self.init_bottomFrame()
+    
+    
+    def close_compare(self):
+        self.root.destroy()
+        self.visible = False
+    
+    
+    def merge_type_changed(self):
+        # Get new merge type and update venn GUI
+        self.merge_type = config.merge_types.get(self.radioVar.get())
+        self.venn_canvas.pack_forget()
+        self.init_venn_diagram(self.merge_type)
+        
+        # Update df and related frames
+        self.df = self.processor.compare(self.merge_type)
+        self.tree.pack_forget(); self.vsb.pack_forget()
+        self.init_treeFrame()
+        self.topLabel['text'] = self.get_label_text(top=True)
+        self.statsLabel['text'] = self.processor.get_summary_stats(df=self.df)
+    
+    
+    def save(self):
+        # Helper function to gather the names to pass to the processor
+        output_name = self.new_name.get()
+        # TODO: Pass names of playlists 1 and 2
+        msg = self.processor.save(output_name, self.df)
+        self.saveDisplay['text'] = msg
+    
+    
+# =============================================================================
+#     GUI Initializers
+# =============================================================================
+    
+    def init_saveFrame(self):
+        label_2 = tk.Label(self.saveFrame, text="New playlist name: ")
+        label_2.pack(side=tk.LEFT)
+        
+        self.new_name = tk.Entry(self.saveFrame)
+        self.new_name.pack(side=tk.LEFT)
+        
+        save_button = tk.Button(self.saveFrame, text="Save", fg="red",
+                                command=self.save)
+        save_button.pack(side=tk.LEFT)
+        self.saveDisplay = tk.Label(self.saveFrame, text="")
+        self.saveDisplay.pack(side=tk.BOTTOM)
+        
+    
+    def init_detailsFrame(self):
+        stats = self.processor.get_summary_stats(df=self.df)
+        self.statsLabel = tk.Label(self.detailsFrame, text=stats)
+        self.statsLabel.pack(side=tk.BOTTOM)
+        
+    
+    def init_topFrame(self):
+        # Get specs about the comparison
+        specs = self.get_label_text(top=True)
+        self.topLabel = tk.Label(self.top_panel, text=specs)
+        self.topLabel.pack(side=tk.RIGHT)
+        close_button = tk.Button(self.top_panel, text="Close", fg="red", 
+                                 command=self.close_compare)
+        close_button.pack(side=tk.RIGHT)
+    
+    
+    def init_treeFrame(self):
+        self.tree = ttk.Treeview(self.treeFrame, selectmode='browse')
+        self.tree.pack(side='left', fill='y')
+        self.vsb = ttk.Scrollbar(self.treeFrame, orient="vertical", 
+                            command=self.tree.yview)
+        self.vsb.pack(side='right', fill='y')
+        self.tree.configure(yscrollcommand=self.vsb.set)
+        # TODO: Fix tree dimensions
+        
+        # Populate tree
+        col_widths = [200, 120, 140]
+        config.populate_tree(self.tree, self.df, col_widths)
+        
+    
     def init_bottomFrame(self):
         # Radio button frame to specify merge type
         self.radioFrame = tk.Frame(self.bottomFrame)
@@ -359,6 +386,14 @@ class Main_GUI:
         self.init_venn_diagram()
     
     
+    def get_label_text(self, top):
+        if top:
+            playlist_names = self.processor.playlists
+            specs = "Merge Type: {} |  Playlist 1: {} | Playlist 2: {}".format(
+                    self.merge_type, playlist_names[0], playlist_names[1])
+            return specs
+        
+    
     def init_radioFrame(self):
         # Radio group for merge type
         self.radioVar = tk.IntVar()
@@ -366,7 +401,7 @@ class Main_GUI:
         for value in range(4):
             text = config.merge_types.get(value)
             Rb = tk.Radiobutton(self.radioFrame, text=text, variable=self.radioVar, 
-                                value=value, command=self.update_venn_diagram)
+                                value=value, command=self.merge_type_changed)
             Rb.pack(anchor=tk.W)
     
     
@@ -398,4 +433,5 @@ class Main_GUI:
         self.venn_canvas.create_arc(75, 5, 165, 95, start=225, extent=270, 
                                     outline=colors[3], style='arc', width=2)
         self.venn_canvas.pack(side=tk.TOP)
+    
     
