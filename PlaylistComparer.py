@@ -11,6 +11,7 @@ import config
 
 # Import modules
 import pandas as pd
+import os
 
 
 class Processor:
@@ -69,15 +70,16 @@ class Processor:
         return idx, shift
     
     
-    def save(self, output_name):
+    def save(self, output_name, df):
         valid = self._verify()
         if not valid:
             print("Must add at least 2 playlists")
             return False
         
+        
         if output_name == "":
+            return 'invalid outputname, please enter at least 1 character'
             # TODO: Use default name; Need how joined, then can use in name
-#            fpath = "output\\{}"  # TODO: Move to config
 #            p1_name = p1.split('.')[0]
 #            p2_name = p2.split('.')[0]
 #            out_name = 'output\\{}{}{}.csv'
@@ -85,13 +87,15 @@ class Processor:
 #            df1_unique.to_csv(out_name.format(p1_name, '-', p2_name), index=False)
 #            df2_unique.to_csv(out_name.format(p2_name, '-', p1_name), index=False)
             print("Save as name not valid")
-            return False
+            return None
         
         # TODO: Must also have output to save, i.e. compare has been called
-        
-        print("!!save not fully implemented")
         #print('Saving playlist to:', output_name)
-        return output_name
+        fpath = "output\\{}.txt".format(output_name)
+        if os.path.isfile(fpath):
+            return "File '{}' already exists... aborted".format(fpath)
+        df.to_csv(fpath, index=False)
+        return "File saved to: '{}'".format(fpath)
     
     
     def compare(self, how='inner'):
