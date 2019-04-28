@@ -28,3 +28,7 @@ def get_playlist_names():
 
 # Converts radio button value to merge type str
 merge_types = {0: 'inner', 1: 'outer', 2: 'left', 3: 'right'}
+
+# Columns for top treeview file viewer
+file_cols = ("name", "size", "date")
+file_col_names = {0: "Playlist Name", 1: "Size", 2: "Date Modified"}

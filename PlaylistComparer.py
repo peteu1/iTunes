@@ -131,7 +131,8 @@ class Processor:
             print("Total unique:", len(df))
         
         else:  # if how == 'inner'
-            df = df1.merge(df2, how='inner')  # TODO: Debug
+            df = df1.merge(df2, how='inner')
+            df.drop_duplicates(inplace=True)
         
         return df
         
@@ -156,12 +157,34 @@ class Processor:
         fName = config.playlists_path + "\\" + playlist_name
         df = pd.read_csv(fName, sep = '\t', encoding='utf-16')
         df = df[['Artist', 'Album', 'Name']]
-        df.drop_duplicates(inplace=True)
+        #df.drop_duplicates(inplace=True)
         
         self.dfs.append(df)  # Store df
         playlist_num = len(self.playlists) - 1
         print("playlists:", self.playlists)
         return df, playlist_num
+    
+    
+    def get_summary_stats(self, playlist_num=-1, df=None):
+        """ 
+        Gets the summary statistics about a playlist
+        @param playlist_num (int) to index the dataframe by frame number
+        @param df (df) to get stats about a df (for compare viewer)
+        @return stats (str) nicely formatted summary statistics
+        """
+        if df is None:
+            df = self.dfs[playlist_num]
+        num_songs = len(df)
+        num_unique = len(df.drop_duplicates())
+        
+        num_dupes = num_songs - num_unique
+        unique_artists = len(df.groupby('Artist').count())
+        unique_albums = len(df.groupby('Album').count())
+        
+        stats = "Songs: {} | Artists: {} | Albums: {} | Duplicates: {}".format(
+                num_songs, unique_artists, unique_albums, num_dupes)
+        print(stats)
+        return stats
     
     
     def get_unique(self, df1, df2):
