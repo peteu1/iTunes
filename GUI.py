@@ -10,7 +10,6 @@ import config
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
-import ntpath
 #import pandas as pd
 
 
@@ -199,8 +198,7 @@ class Main_GUI:
         # Write text
         text = tk.Text(self.help_window)
         text.pack()
-        f = open("help.txt", "r")
-        help_text = f.read()
+        help_text = config.get_help_text()
         text.insert('end', help_text)
         text.configure(state=tk.DISABLED)
     
@@ -293,6 +291,10 @@ class Comparator():
     def launch_compare_viewer(self):
         """ df is merged df; specs is merge specifications """
         
+        # Kill old frame if already visible
+        if self.visible:
+            self.close()
+        
         # Pop-out a new widget
         self.root = tk.Toplevel(self.parent)
         self.root.geometry(config.get_size('comparator'))
@@ -327,7 +329,7 @@ class Comparator():
         self.init_bottomFrame()
     
     
-    def close_compare(self):
+    def close(self):
         self.root.destroy()
         self.visible = False
     
@@ -385,7 +387,7 @@ class Comparator():
         self.topLabel = tk.Label(self.top_panel, text=specs)
         self.topLabel.pack(side=tk.RIGHT)
         close_button = tk.Button(self.top_panel, text="Close", fg="red", 
-                                 command=self.close_compare)
+                                 command=self.close)
         close_button.pack(side=tk.RIGHT)
     
     
