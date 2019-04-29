@@ -7,11 +7,11 @@ Created on Mon Apr  8 19:39:12 2019
 
 # Import classes
 from GUI import Main_GUI
-import config
+#import config
 
 # Import modules
 import pandas as pd
-import os
+import os, ntpath
 
 
 class Processor:
@@ -32,12 +32,46 @@ class Processor:
         print("df out of range!")
         return None
     
+    def get_playlist_names(self):
+        # Returns friendly names of playlists
+        fnames = [ntpath.split(path)[1] for path in self.playlists]
+        playlist_names = [os.path.splitext(fname)[0] for fname in fnames]
+        return playlist_names
     
 # =============================================================================
 #     Callback methods    
 # =============================================================================
     
+    def clicked(self, current_dir, selection):
+        """ 
+        Process what to do when a file from the tree was clicked 
+        @return current_dir (str) updated current directory
+                updateTree (bool) whether or not to update the directory tree
+                add (bool) whether or not the selection can be added to frame
+        """
+        updateTree = add = False
+        
+        if selection == "..":
+            # Go up a directory
+            current_dir = os.path.dirname(current_dir)
+            updateTree = True
+        else:
+            fpath = os.path.join(current_dir, selection)
+            if os.path.isfile(fpath):
+                filename, file_extension = os.path.splitext(selection)
+                if file_extension == '.txt':
+                    add = True
+                else:
+                    print("Cannot add files of type:", file_extension)
+            elif os.path.isdir(fpath):
+                current_dir = os.path.join(current_dir, selection)
+                updateTree = True
+        
+        return current_dir, updateTree, add
+        
+    
     def add(self, playlist_name):
+        """ playlist_name is the full path to the playlist """
         # Validate integrity
         if playlist_name in self.playlists:
             print("Can't compare playlist to itself")
@@ -78,7 +112,7 @@ class Processor:
         
         
         if output_name == "":
-            return 'invalid outputname, please enter at least 1 character'
+            
             # TODO: Use default name; Need how joined, then can use in name
 #            p1_name = p1.split('.')[0]
 #            p2_name = p2.split('.')[0]
@@ -86,14 +120,13 @@ class Processor:
 #            df.to_csv(out_name.format(p1_name, '+', p2_name), index=False)
 #            df1_unique.to_csv(out_name.format(p1_name, '-', p2_name), index=False)
 #            df2_unique.to_csv(out_name.format(p2_name, '-', p1_name), index=False)
-            print("Save as name not valid")
-            return None
+            return 'Invalid outputname... must enter at least 1 character.'
         
         # TODO: Must also have output to save, i.e. compare has been called
         #print('Saving playlist to:', output_name)
         fpath = "output\\{}.txt".format(output_name)
         if os.path.isfile(fpath):
-            return "File '{}' already exists... aborted".format(fpath)
+            return "File '{}' already exists... aborted.".format(fpath)
         df.to_csv(fpath, index=False)
         return "File saved to: '{}'".format(fpath)
     
@@ -155,17 +188,19 @@ class Processor:
     
     
     def _add(self, playlist_name):
+        try:
+            df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-16')
+        except:
+            try:
+                df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-8')
+            except:
+                print("Reading {} failed.".format(playlist_name))
+                return None, -1
+        df = df[['Artist', 'Album', 'Name']]
         # Add playlist name to playlists to track how many are added
         self.playlists.append(playlist_name)
-        
-        fName = config.playlists_path + "\\" + playlist_name
-        df = pd.read_csv(fName, sep = '\t', encoding='utf-16')
-        df = df[['Artist', 'Album', 'Name']]
-        #df.drop_duplicates(inplace=True)
-        
         self.dfs.append(df)  # Store df
         playlist_num = len(self.playlists) - 1
-        print("playlists:", self.playlists)
         return df, playlist_num
     
     
@@ -187,7 +222,6 @@ class Processor:
         
         stats = "Songs: {} | Artists: {} | Albums: {} | Duplicates: {}".format(
                 num_songs, unique_artists, unique_albums, num_dupes)
-        print(stats)
         return stats
     
     

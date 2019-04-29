@@ -9,6 +9,8 @@ import config
 
 import tkinter as tk
 import tkinter.ttk as ttk
+import os
+import ntpath
 #import pandas as pd
 
 
@@ -18,14 +20,18 @@ class Main_GUI:
     def __init__(self, processor):
         # Processor object used for button call backs
         self.processor = processor
-        self.new_name = ""
         self.root = tk.Tk()  # make window
-        self.root.geometry(config.size)
+        self.root.geometry(config.get_size())
         
+        self.init_GUI()
+        
+        
+    def init_GUI(self):
         # Top frame for displaying all playlists in a tree view
         self.topFrame = tk.Frame(self.root, height=100)
         self.topFrame.pack(side=tk.TOP)  # pack it in wherever
         self.tree = None
+        self.current_dir = config.playlists_path
         self.selection = None # Currently selected item in treeview
         self.init_topFrame()
         
@@ -33,7 +39,7 @@ class Main_GUI:
         self.addFrame = tk.Frame(self.root)
         self.addFrame.pack(side=tk.TOP)
         self.init_addFrame()
-    
+        
         # Initialize mainFrame GUI
         self.mainFrame = tk.Frame(self.root)
         self.mainFrame.grid_columnconfigure(0, weight=1, uniform="group1")
@@ -43,14 +49,14 @@ class Main_GUI:
         self.playlist_frames = [self.create_playlist_frame(0),
                                 self.create_playlist_frame(1)]
         
+        # Class to control the compare window
+        self.comparator = Comparator(self.root, self.processor)
+        
         # Frame with buttons: refresh, compare, help
         self.buttonFrame = tk.Frame(self.root)
         self.buttonFrame.pack(side=tk.BOTTOM)  # pack it in on bottom
         self.help_window = None; self.compare_viewer = None
         self.init_buttonFrame()
-        
-        # Class to control the compare window
-        self.comparator = Comparator(self.root, self.processor)
         
         # Infinite loop to keep window up until closed
         self.root.mainloop()
@@ -62,15 +68,27 @@ class Main_GUI:
     
     
     def tree_double_clicked(self, event):
-        """ Add playlist if double clicked """
+        """ Navigate file structure/ add playlist """
         region = self.tree.identify("region", event.x, event.y)
         if region == 'cell':
-            self.add()
-            
+            self.current_dir, updateTree, add = self.processor.clicked(
+                    self.current_dir, self.selection)
+            if updateTree:
+                self.update_tree()
+            if add:
+                self.add()
     
+    
+    def update_tree(self):
+        self.tree.pack_forget()
+        self.init_topFrame()
+        
+        
     def add(self):
         """ Passes current selection to processor & updates GUI """
-        df, playlist_num = self.processor.add(self.selection)  # record the add
+        # TODO: pass the full path, using self.current_dir
+        fName = os.path.join(self.current_dir, self.selection)
+        df, playlist_num = self.processor.add(fName)  # record the add
         if df is None:
             return None
         self.update_playlist_frame(playlist_num)
@@ -78,7 +96,8 @@ class Main_GUI:
     
     def remove(self):
         """ Removes selected playlist from viewer if exists """
-        playlist_num, shift = self.processor.remove(self.selection)
+        fName = os.path.join(self.current_dir, self.selection)
+        playlist_num, shift = self.processor.remove(fName)
 
         # Ensure valid remove
         if playlist_num == -1:
@@ -103,13 +122,17 @@ class Main_GUI:
         
     
     def refresh(self):
-        # Reset playlist name fields
-#        self.playlist_frames = [self.create_playlist_frame(1),
-#                                self.create_playlist_frame(2)]
-#        self.init_topFrame()  # Reload topFrame in case folder changed
-        self.processor.refresh()
-        self.root.destroy()
-        self.__init__(self.processor)
+        self.processor.refresh()  # Reset playlist name fields
+        
+        # Remove all frames from the root
+        self.topFrame.pack_forget()
+        self.addFrame.pack_forget()
+        self.mainFrame.pack_forget()
+        self.buttonFrame.pack_forget()
+        self.comparator.root.destroy()
+        
+        # Re-initialize GUI
+        self.init_GUI()
     
     
 # =============================================================================
@@ -136,7 +159,8 @@ class Main_GUI:
         # Add name of playlist to top of playlist frame
         name_frame = tk.Frame(self.playlist_frames[playlist_num])
         name_frame.pack(side=tk.TOP)
-        playlist_name = self.processor.playlists[playlist_num]
+        
+        playlist_name = self.processor.get_playlist_names()[playlist_num]
         label_text = "Playlist {}: {}".format(int(playlist_num + 1), playlist_name)
         label = tk.Label(name_frame, text=label_text)
         label.pack(side=tk.LEFT)
@@ -199,7 +223,7 @@ class Main_GUI:
     
     def init_topFrame(self):
         # Display all the playlists in the folder
-        names, sizes, dates = config.get_playlist_names()
+        names, sizes, dates = config.get_file_names(self.current_dir)
         
         self.tree = ttk.Treeview(self.topFrame, columns=config.file_cols, 
                                  show="headings", selectmode="browse")
@@ -212,9 +236,11 @@ class Main_GUI:
                           lambda: self.sort_tree(self.tree, 2, False))
         
         # Insert data
+        self.tree.insert("", tk.END, values=("..", "", "")) # 'go up' directory
         for name, size, date in zip(names, sizes, dates):
             self.tree.insert("", tk.END, values=(name, size, date))
         
+        # Pack tree & attach functions
         self.tree.pack(side=tk.TOP, fill=tk.X, expand=True)
         self.tree.bind('<<TreeviewSelect>>', self.tree_select_event)
         self.tree.bind('<Double-1>', self.tree_double_clicked)
@@ -269,7 +295,7 @@ class Comparator():
         
         # Pop-out a new widget
         self.root = tk.Toplevel(self.parent)
-        self.root.geometry("560x400")
+        self.root.geometry(config.get_size('comparator'))
         self.visible = True
         
         # Initialize top panel for merge specs & close button
@@ -291,6 +317,8 @@ class Comparator():
         # Save frame for entering new playlist name & saving to file
         self.saveFrame = tk.Frame(self.root)
         self.saveFrame.pack(side=tk.TOP)
+        self.saveDisplayFrame = tk.Frame(self.root)
+        self.saveDisplayFrame.pack(side=tk.TOP)
         self.init_saveFrame()
         
         # Bottom frame holds radio button frame and venn diagram
@@ -340,8 +368,9 @@ class Comparator():
         save_button = tk.Button(self.saveFrame, text="Save", fg="red",
                                 command=self.save)
         save_button.pack(side=tk.LEFT)
-        self.saveDisplay = tk.Label(self.saveFrame, text="")
-        self.saveDisplay.pack(side=tk.BOTTOM)
+        
+        self.saveDisplay = tk.Label(self.saveDisplayFrame, text="")
+        self.saveDisplay.pack(side=tk.LEFT)
         
     
     def init_detailsFrame(self):
@@ -388,7 +417,7 @@ class Comparator():
     
     def get_label_text(self, top):
         if top:
-            playlist_names = self.processor.playlists
+            playlist_names = self.processor.get_playlist_names()
             specs = "Merge Type: {} |  Playlist 1: {} | Playlist 2: {}".format(
                     self.merge_type, playlist_names[0], playlist_names[1])
             return specs

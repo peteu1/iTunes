@@ -8,22 +8,29 @@ Created on Tue Apr 23 21:59:30 2019
 import os
 from datetime import datetime
 
-width = 600
-height = 600
-size = "{}x{}".format(str(width), str(height))
+
+def get_size(frame='GUI'):
+    width = 600; height = 600
+    if frame == "comparator":
+        width = 550; height = 450
+    return "{}x{}".format(str(width), str(height))
+    
 
 # path to where all the playlist .txt's are stored (relative)
-playlists_path = 'playlists'  # TODO: Get this dynamically (settings panel?)
+wdir = os.getcwd()
+playlists_rel_path = 'playlists'  # TODO: Get this dynamically (settings panel?)
+playlists_path = os.path.join(wdir, playlists_rel_path)
 
-def get_playlist_names():
+
+def get_file_names(path):
     """ Gets names of all playlists in playlists_path """
-    names = os.listdir(playlists_path)
-    ctimes = [os.path.getctime(playlists_path + '\\' + path) for path in names]
+    files = os.listdir(path)
+    ctimes = [os.path.getctime(path + '\\' + file) for file in files]
     dates = [datetime.strftime(datetime.utcfromtimestamp(ctime), '%m-%d-%Y') for
              ctime in ctimes]
-    sizes = [os.path.getsize(playlists_path + '\\' + path) for path in names]
+    sizes = [os.path.getsize(path + '\\' + file) for file in files]
     kbs = [str(int(round(size/1024, 0))) + " KB" for size in sizes]
-    return names, kbs, dates
+    return files, kbs, dates
 
 
 # Converts radio button value to merge type str
