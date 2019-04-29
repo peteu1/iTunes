@@ -56,3 +56,10 @@ def populate_tree(tree, df, col_widths):
         values = tuple([a if type(a) is not float else "" for a in list(row)])
         tree.insert("", 'end', text="L1", values=values)
     
+
+help_path = 'strings/help.txt'
+
+def get_help_text():
+    f = open(help_path, "r")
+    help_text = f.read()
+    return help_text
