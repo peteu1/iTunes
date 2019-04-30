@@ -32,11 +32,34 @@ class Processor:
         print("df out of range!")
         return None
     
+    
     def get_playlist_names(self):
         # Returns friendly names of playlists
         fnames = [ntpath.split(path)[1] for path in self.playlists]
         playlist_names = [os.path.splitext(fname)[0] for fname in fnames]
         return playlist_names
+    
+    
+    def get_summary_stats(self, playlist_num=-1, df=None):
+        """ 
+        Gets the summary statistics about a playlist
+        @param playlist_num (int) to index the dataframe by frame number
+        @param df (df) to get stats about a df (for compare viewer)
+        @return stats (str) nicely formatted summary statistics
+        """
+        if df is None:
+            df = self.dfs[playlist_num]
+        num_songs = len(df)
+        num_unique = len(df.drop_duplicates())
+        
+        num_dupes = num_songs - num_unique
+        unique_artists = len(df.groupby('Artist').count())
+        unique_albums = len(df.groupby('Album').count())
+        
+        stats = "Songs: {} | Artists: {} | Albums: {} | Duplicates: {}".format(
+                num_songs, unique_artists, unique_albums, num_dupes)
+        return stats
+    
     
 # =============================================================================
 #     Callback methods    
@@ -46,28 +69,28 @@ class Processor:
         """ 
         Process what to do when a file from the tree was clicked 
         @return current_dir (str) updated current directory
-                updateTree (bool) whether or not to update the directory tree
-                add (bool) whether or not the selection can be added to frame
+        @return action (str) tells the GUI what to do
+            'updateTree': whether or not to update the directory tree
+            'add': add the selection to playlist_frame
+            'remove': remove the selection from playlist_frame
         """
-        updateTree = add = False
-        
-        if selection == "..":
-            # Go up a directory
+        if selection == "..":  # Go up a directory
             current_dir = os.path.dirname(current_dir)
-            updateTree = True
+            action = 'updateTree'
         else:
+            # Check if full path of item clicked is a file or directory
             fpath = os.path.join(current_dir, selection)
-            if os.path.isfile(fpath):
+            if os.path.isfile(fpath):  # file was double clicked
                 filename, file_extension = os.path.splitext(selection)
                 if file_extension == '.txt':
-                    add = True
+                    action = 'remove' if fpath in self.playlists else 'add'
                 else:
+                    action = 'nothing'
                     print("Cannot add files of type:", file_extension)
-            elif os.path.isdir(fpath):
+            elif os.path.isdir(fpath):  # directory was double clicked
                 current_dir = os.path.join(current_dir, selection)
-                updateTree = True
-        
-        return current_dir, updateTree, add
+                action = 'updateTree'
+        return current_dir, action
         
     
     def add(self, playlist_name):
@@ -80,7 +103,20 @@ class Processor:
             print("Can only compare two playlists")
             return None, 2
         
-        return self._add(playlist_name)
+        try:
+            df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-16')
+        except:
+            try:
+                df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-8')
+            except:
+                print("Reading {} failed.".format(playlist_name))
+                return None, -1
+        df = df[['Artist', 'Album', 'Name']]
+        # Add playlist name to playlists to track how many are added
+        self.playlists.append(playlist_name)
+        self.dfs.append(df)  # Store df
+        playlist_num = len(self.playlists) - 1
+        return df, playlist_num
     
     
     def remove(self, playlist_name):
@@ -100,7 +136,6 @@ class Processor:
             self.dfs = [self.dfs[(idx+1)%2]]  # Retain only the other df
             if idx == 0:
                 shift = True
-        print("playlists:", self.playlists)
         return idx, shift
     
     
@@ -139,6 +174,7 @@ class Processor:
             return None
         
         print("Compare type:", how)
+        
         p1 = self.playlists[0]
         p2 = self.playlists[1]
         df1 = self.dfs[0]
@@ -148,7 +184,7 @@ class Processor:
         
         if how == 'left':
             # Get what is unique in playlist_1
-            df1_unique = self.get_unique(df1, df2)
+            df1_unique = self._get_unique(df1, df2)
             print("\nnum unique in {}: {}, total length: {}"
                   .format(p1, len(df1_unique), len(df1)))
             # TODO: Try not dropping index and use it to index df1_full
@@ -156,7 +192,7 @@ class Processor:
         
         if how == 'right':
             # Get what is unique in playlist_2
-            df2_unique = self.get_unique(df2, df1)
+            df2_unique = self._get_unique(df2, df1)
             print("\nnum unique in {}: {}, total length: {}"
                   .format(p2, len(df2_unique), len(df2)))
             return df2_unique
@@ -179,7 +215,7 @@ class Processor:
         
     
 # =============================================================================
-#     Logic methods
+#     Logic & helper methods
 # =============================================================================
     
     def _verify(self):
@@ -187,45 +223,7 @@ class Processor:
         return len(self.playlists) >= 2
     
     
-    def _add(self, playlist_name):
-        try:
-            df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-16')
-        except:
-            try:
-                df = pd.read_csv(playlist_name, sep = '\t', encoding='utf-8')
-            except:
-                print("Reading {} failed.".format(playlist_name))
-                return None, -1
-        df = df[['Artist', 'Album', 'Name']]
-        # Add playlist name to playlists to track how many are added
-        self.playlists.append(playlist_name)
-        self.dfs.append(df)  # Store df
-        playlist_num = len(self.playlists) - 1
-        return df, playlist_num
-    
-    
-    def get_summary_stats(self, playlist_num=-1, df=None):
-        """ 
-        Gets the summary statistics about a playlist
-        @param playlist_num (int) to index the dataframe by frame number
-        @param df (df) to get stats about a df (for compare viewer)
-        @return stats (str) nicely formatted summary statistics
-        """
-        if df is None:
-            df = self.dfs[playlist_num]
-        num_songs = len(df)
-        num_unique = len(df.drop_duplicates())
-        
-        num_dupes = num_songs - num_unique
-        unique_artists = len(df.groupby('Artist').count())
-        unique_albums = len(df.groupby('Album').count())
-        
-        stats = "Songs: {} | Artists: {} | Albums: {} | Duplicates: {}".format(
-                num_songs, unique_artists, unique_albums, num_dupes)
-        return stats
-    
-    
-    def get_unique(self, df1, df2):
+    def _get_unique(self, df1, df2):
         """ returns the songs in df1 (left) that are not in df2 """
         left = df1[~((df1.Artist.isin(df2.Artist)) & 
                       (df1.Album.isin(df2.Album)) & 

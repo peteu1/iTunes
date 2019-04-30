@@ -45,49 +45,36 @@ class Main_GUI:
         self.mainFrame.grid_columnconfigure(1, weight=1, uniform="group1")
         self.mainFrame.grid_rowconfigure(0, weight=1)
         self.mainFrame.pack(side=tk.TOP, fill=tk.X, expand=1, anchor=tk.N)
-        self.playlist_frames = [self.create_playlist_frame(0),
-                                self.create_playlist_frame(1)]
+        # List of dicts, {'frame': tk.Frame, 'tree': ttk.TreeView}
+        self.playlist_frames = [
+                {'frame': self.create_playlist_frame(0), 'tree': None},
+                {'frame': self.create_playlist_frame(1), 'tree': None}]
         
-        # Class to control the compare window
+        # Compare and help window classes
         self.comparator = Comparator(self.root, self.processor)
+        self.help_window = Help_Window(self.root)
         
         # Frame with buttons: refresh, compare, help
         self.buttonFrame = tk.Frame(self.root)
         self.buttonFrame.pack(side=tk.BOTTOM)  # pack it in on bottom
-        self.help_window = None; self.compare_viewer = None
+        
         self.init_buttonFrame()
         
         # Infinite loop to keep window up until closed
         self.root.mainloop()
     
-    
-    def tree_select_event(self, event):
-        item_iid = self.tree.selection()[0]
-        self.selection = self.tree.item(item_iid)['values'][0]
-    
-    
-    def tree_double_clicked(self, event):
-        """ Navigate file structure/ add playlist """
-        region = self.tree.identify("region", event.x, event.y)
-        if region == 'cell':
-            self.current_dir, updateTree, add = self.processor.clicked(
-                    self.current_dir, self.selection)
-            if updateTree:
-                self.update_tree()
-            if add:
-                self.add()
-    
-    
-    def update_tree(self):
-        self.tree.pack_forget()
-        self.init_topFrame()
         
+# =============================================================================
+#     Callback methods
+# =============================================================================
         
     def add(self):
         """ Passes current selection to processor & updates GUI """
         # TODO: pass the full path, using self.current_dir
         fName = os.path.join(self.current_dir, self.selection)
-        df, playlist_num = self.processor.add(fName)  # record the add
+        
+        # Record the add (if valid)
+        df, playlist_num = self.processor.add(fName)
         if df is None:
             return None
         self.update_playlist_frame(playlist_num)
@@ -103,21 +90,20 @@ class Main_GUI:
             return False
         
         # Reset frame removed
-        self.playlist_frames[playlist_num].grid_forget()
+        self.playlist_frames[playlist_num].get('frame').grid_forget()
         
         # Check if need to shift playlist on right to left
         if shift:
             # Right exists, move frame to left
-            self.playlist_frames[1].grid_forget()  # delete right
+            self.playlist_frames[1].get('frame').grid_forget()  # delete right
             self.update_playlist_frame(0)  # Add to left (processor has info)
         return True
-    
+        
     
     def compare(self):
         if self.processor._verify():
             # Update Comparison Viewer GUI
             self.comparator.launch_compare_viewer()
-            # TODO: If self.compare_viewer is not None, update instead of restarting
         
     
     def refresh(self):
@@ -132,6 +118,31 @@ class Main_GUI:
         
         # Re-initialize GUI
         self.init_GUI()
+    
+    
+# =============================================================================
+#     Tree frame controllers
+# =============================================================================
+    
+    def tree_select_event(self, event):
+        item_iid = self.tree.selection()[0]
+        self.selection = self.tree.item(item_iid)['values'][0]
+    
+    
+    def tree_double_clicked(self, event):
+        """ Navigate file structure/ add playlist """
+        region = self.tree.identify("region", event.x, event.y)
+        if region == 'cell':
+            self.current_dir, action = self.processor.clicked(
+                    self.current_dir, self.selection)
+            if action == 'updateTree':
+                # update tree (remove from top frame and re-create)
+                self.tree.pack_forget()
+                self.init_topFrame()
+            elif action == 'add':
+                self.add()
+            elif action == 'remove':
+                self.remove()
     
     
 # =============================================================================
@@ -153,10 +164,12 @@ class Main_GUI:
     
     def update_playlist_frame(self, playlist_num):
         # Recreate playlist
-        self.playlist_frames[playlist_num] = self.create_playlist_frame(playlist_num)
+        # TODO
+        self.playlist_frames[playlist_num] = {'frame': 
+            self.create_playlist_frame(playlist_num)}
         
         # Add name of playlist to top of playlist frame
-        name_frame = tk.Frame(self.playlist_frames[playlist_num])
+        name_frame = tk.Frame(self.playlist_frames[playlist_num].get('frame'))
         name_frame.pack(side=tk.TOP)
         
         playlist_name = self.processor.get_playlist_names()[playlist_num]
@@ -165,59 +178,51 @@ class Main_GUI:
         label.pack(side=tk.LEFT)
         
         # Add tree to display playlist info to playlist frame & make scrollable
-        tree_frame = tk.Frame(self.playlist_frames[playlist_num])
-        tree_frame.pack(side=tk.TOP)
-        tree = ttk.Treeview(tree_frame, selectmode='browse')
-        tree.pack(side='left')
+        tree_frame = tk.Frame(self.playlist_frames[playlist_num].get('frame'))
+        tree_frame.pack(side=tk.TOP, fill=tk.X, expand=True)
+        cols = ("Song", "Artist", "Album")
+        tree = ttk.Treeview(tree_frame, columns=cols, show="headings", 
+                            selectmode='browse')
+        
+        tree.pack(side='left', fill=tk.X, expand=True)
         vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
         vsb.pack(side='right', fill='y')
         tree.configure(yscrollcommand=vsb.set)
-        # TODO: Fix tree dimensions
         
-        # Get dataframe from processor & populate tree
-        df = self.processor.get_df(playlist_num)
+        # Set initial column widths and allow stretching with window
         col_widths = [100, 80, 80]
-        config.populate_tree(tree, df, col_widths)
+        for col, width in zip(list(cols), col_widths):
+            tree.column(col, width=width, anchor='c', stretch=tk.YES)
+        
+        # Add sortable headings
+        tree.heading("#1", text="Song", anchor=tk.W,
+                     command=lambda: self.sort_tree(tree, 0, False))
+        tree.heading("#2", text="Artist", anchor=tk.W,
+                     command=lambda: self.sort_tree(tree, 1, False))
+        tree.heading("#3", text="Album", anchor=tk.W,
+                     command=lambda: self.sort_tree(tree, 2, False))
+        
+        # Get dataframe from processor & loop through rows to populate tree
+        df = self.processor.get_df(playlist_num)
+        for _, row in df.iterrows():
+            values = tuple([a if type(a) is not float else "" for a in list(row)])
+            tree.insert("", 'end', values=values) 
+        
+        # end config.populate_tree
+        # Store tree
+        self.playlist_frames[playlist_num]['tree'] = tree
         
         # Populate bottom section with statistics about playlist
-        stats_frame = tk.Frame(self.playlist_frames[playlist_num])
+        stats_frame = tk.Frame(self.playlist_frames[playlist_num].get('frame'))
         stats_frame.pack(side=tk.BOTTOM)
         stats = self.processor.get_summary_stats(playlist_num=playlist_num)
         label_2 = tk.Label(stats_frame, text=stats)
         label_2.pack(side=tk.BOTTOM)
     
     
-    def display_help(self):
-        # Initialize popout window and close button
-        self.help_window = tk.Toplevel(self.root)
-        self.help_window.geometry("560x400")
-        close_button = tk.Button(self.help_window, text="Close", fg="red", 
-                                 command=self.close_help)
-        close_button.pack(side=tk.BOTTOM)
-        
-        # Write text
-        text = tk.Text(self.help_window)
-        text.pack()
-        help_text = config.get_help_text()
-        text.insert('end', help_text)
-        text.configure(state=tk.DISABLED)
-    
-    
-    def close_help(self):
-        self.help_window.destroy()
-    
-    
 # =============================================================================
 #     GUI Initializers
 # =============================================================================
-    
-    def create_playlist_frame(self, frame_number):
-        """ frame_number is 0 for left, 1 for right """
-        frame = tk.Frame(self.mainFrame)
-        # Make frame width equal to half of the screen width
-        frame.grid(row=0, column=frame_number, sticky="nsew")
-        return frame
-    
     
     def init_topFrame(self):
         # Display all the playlists in the folder
@@ -244,6 +249,14 @@ class Main_GUI:
         self.tree.bind('<Double-1>', self.tree_double_clicked)
         
     
+    def create_playlist_frame(self, frame_number):
+        """ frame_number is 0 for left, 1 for right """
+        frame = tk.Frame(self.mainFrame)
+        # Make frame width equal to half of the screen width
+        frame.grid(row=0, column=frame_number, sticky="nsew")
+        return frame
+    
+    
     def init_addFrame(self):
         label_1 = tk.Label(self.addFrame, fg="green", bg="black",
                            text="Highlight a playlist and press add --->")
@@ -262,15 +275,47 @@ class Main_GUI:
         button_2 = tk.Button(self.buttonFrame, text="Compare", fg="red",
                              command=self.compare)
         button_3 = tk.Button(self.buttonFrame, text="Help", fg="red",
-                             command=self.display_help)
+                             command=self.help_window.display)
         button_1.grid(row=0)
         button_2.grid(row=0, column=1)
         button_3.grid(row=0, column=2)
-        #self.buttonFrame.focus_set()  # Set focus so that binding will work
         
         
     
+class Help_Window():
     
+    def __init__(self, root):
+        self.parent = root
+        self.visible = False
+        
+    
+    def display(self):
+        
+        # Kill old frame if already visible
+        if self.visible:
+            self.close()
+        
+        # Initialize popout window and close button
+        self.root = tk.Toplevel(self.parent)
+        self.root.geometry("560x400")
+        self.visible = True
+        close_button = tk.Button(self.root, text="Close", fg="red", 
+                                 command=lambda: self.close())
+        close_button.pack(side=tk.BOTTOM)
+        
+        # Write text
+        text = tk.Text(self.root)
+        text.pack()
+        help_text = config.get_help_text()
+        text.insert('end', help_text)
+        text.configure(state=tk.DISABLED)
+    
+    
+    def close(self):
+        self.root.destroy()
+        self.visible = False
+        
+        
 
 class Comparator():
     
