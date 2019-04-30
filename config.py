@@ -22,14 +22,28 @@ playlists_rel_path = 'playlists'  # TODO: Get this dynamically (settings panel?)
 playlists_path = os.path.join(wdir, playlists_rel_path)
 
 
+def _dir_size(fPath):
+    """ recursive function to get size of entire directory """
+    size = os.path.getsize(fPath)
+    if not os.path.isdir(fPath):
+        return size
+    return size + sum([_dir_size(os.path.join(fPath, file)) for 
+                       file in os.listdir(fPath)])
+
+
 def get_file_names(path):
     """ Gets names of all playlists in playlists_path """
     files = os.listdir(path)
-    ctimes = [os.path.getctime(path + '\\' + file) for file in files]
-    dates = [datetime.strftime(datetime.utcfromtimestamp(ctime), '%m-%d-%Y') for
-             ctime in ctimes]
-    sizes = [os.path.getsize(path + '\\' + file) for file in files]
-    kbs = [str(int(round(size/1024, 0))) + " KB" for size in sizes]
+    paths = [os.path.join(path, file) for file in files]
+    dts = [datetime.utcfromtimestamp(os.path.getctime(path)) for path in paths]
+    dates = [datetime.strftime(dt, '%m-%d-%Y') for dt in dts]
+    kbs = []
+    # TODO: If path is too close to root, don't compute directory sizes (too slow!)
+    for path in paths:
+        try:
+            kbs.append(str(int(round(_dir_size(path)/1024, 0))) + " KB")
+        except:
+            kbs.append("")
     return files, kbs, dates
 
 
@@ -56,6 +70,7 @@ def populate_tree(tree, df, col_widths):
         values = tuple([a if type(a) is not float else "" for a in list(row)])
         tree.insert("", 'end', text="L1", values=values)
     
+
 
 help_path = 'strings/help.txt'
 
