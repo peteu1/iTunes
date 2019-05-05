@@ -31,6 +31,7 @@ class Main_GUI:
         self.topFrame.pack(side=tk.TOP)  # pack it in wherever
         self.tree = None
         self.current_dir = config.playlists_path
+        self.cdir_label = None
         self.selection = None # Currently selected item in treeview
         self.init_topFrame()
         
@@ -114,7 +115,8 @@ class Main_GUI:
         self.addFrame.pack_forget()
         self.mainFrame.pack_forget()
         self.buttonFrame.pack_forget()
-        self.comparator.root.destroy()
+        self.comparator.refresh()
+        self.help_window.refresh()
         
         # Re-initialize GUI
         self.init_GUI()
@@ -137,6 +139,7 @@ class Main_GUI:
                     self.current_dir, self.selection)
             if action == 'updateTree':
                 # update tree (remove from top frame and re-create)
+                self.cdir_label.pack_forget()
                 self.tree.pack_forget()
                 self.init_topFrame()
             elif action == 'add':
@@ -225,13 +228,17 @@ class Main_GUI:
 # =============================================================================
     
     def init_topFrame(self):
-        # Display all the playlists in the folder
+        # Display current directory at top
+        self.cdir_label = tk.Label(self.topFrame, text=self.current_dir)
+        self.cdir_label.pack(side=tk.TOP)
+        
+        # Display all the files in current directory
         names, sizes, dates = config.get_file_names(self.current_dir)
         
         self.tree = ttk.Treeview(self.topFrame, columns=config.file_cols, 
                                  show="headings", selectmode="browse")
         # Define headings
-        self.tree.heading("#1", text="Playlist Name", anchor=tk.W, command=
+        self.tree.heading("#1", text="File", anchor=tk.W, command=
                           lambda: self.sort_tree(self.tree, 0, False))
         self.tree.heading("#2", text="Size", anchor=tk.W, command=
                           lambda: self.sort_tree(self.tree, 1, False))
@@ -288,6 +295,9 @@ class Help_Window():
         self.parent = root
         self.visible = False
         
+    def refresh(self):
+        if self.visible:
+            self.close()
     
     def display(self):
         
@@ -332,7 +342,10 @@ class Comparator():
         self.df = None
         self.saveDisplay = None
     
-    
+    def refresh(self):
+        if self.visible:
+            self.close()
+        
     def launch_compare_viewer(self):
         """ df is merged df; specs is merge specifications """
         
@@ -396,8 +409,30 @@ class Comparator():
     def save(self):
         # Helper function to gather the names to pass to the processor
         output_name = self.new_name.get()
-        # TODO: Pass names of playlists 1 and 2
-        msg = self.processor.save(output_name, self.df)
+        if output_name == "":
+            msg = 'Invalid outputname... must enter at least 1 character.'
+            # TODO: Ask whether to use default name
+            #if cancel:
+                #return False
+            p_names = self.processor.get_playlist_names()
+            output_name = config.get_default_name(p_names[0], p_names[1],
+                                                  self.merge_type)
+        
+        # Attempt to save file
+        saved, fpath, error = self.processor.save(output_name, self.df)
+        # TODO: Re-structure logic, 
+        # TODO: if over-write, re-call this function to handle possible error
+        msg = "Abort saving '{}'".format(fpath)
+        if error:
+            msg = "Error saving '{}'. Aborting...".format(fpath)
+        if not saved and not error:
+            # File already exists, ask user whether to over-write
+            msg = "File '{}' already exists.".format(fpath)
+            # TODO: Pop-up window to ask whether to overwrite
+            saved, fpath, error = self.processor.save(output_name, self.df, True)
+        if saved:
+            msg = "File saved to: '{}'".format(fpath)
+            
         self.saveDisplay['text'] = msg
     
     

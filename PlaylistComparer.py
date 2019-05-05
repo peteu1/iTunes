@@ -139,31 +139,22 @@ class Processor:
         return idx, shift
     
     
-    def save(self, output_name, df):
+    def save(self, output_name, df, overwrite=False):
+        fpath = "output\\{}.txt".format(output_name)
+        
         valid = self._verify()
         if not valid:
             print("Must add at least 2 playlists")
-            return False
+            return False, fpath, False
         
-        
-        if output_name == "":
-            
-            # TODO: Use default name; Need how joined, then can use in name
-#            p1_name = p1.split('.')[0]
-#            p2_name = p2.split('.')[0]
-#            out_name = 'output\\{}{}{}.csv'
-#            df.to_csv(out_name.format(p1_name, '+', p2_name), index=False)
-#            df1_unique.to_csv(out_name.format(p1_name, '-', p2_name), index=False)
-#            df2_unique.to_csv(out_name.format(p2_name, '-', p1_name), index=False)
-            return 'Invalid outputname... must enter at least 1 character.'
-        
-        # TODO: Must also have output to save, i.e. compare has been called
-        #print('Saving playlist to:', output_name)
-        fpath = "output\\{}.txt".format(output_name)
-        if os.path.isfile(fpath):
-            return "File '{}' already exists... aborted.".format(fpath)
-        df.to_csv(fpath, index=False)
-        return "File saved to: '{}'".format(fpath)
+        if os.path.isfile(fpath) and not overwrite:
+            # Tell to GUI to ask user whether to overwrite
+            return False, fpath, False
+        try:
+            df.to_csv(fpath, index=False)
+            return True, fpath, False
+        except:    
+            return False, fpath, True
     
     
     def compare(self, how='inner'):

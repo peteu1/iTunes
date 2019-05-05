@@ -47,6 +47,15 @@ def get_file_names(path):
     return files, kbs, dates
 
 
+def get_default_name(p1, p2, merge_type):
+    if merge_type == 'inner':
+        return p1 + '_' + p2
+    if merge_type == 'left':
+        return p1 + '-' + p2
+    elif merge_type == 'right':
+        return p2 + '-' + p1
+    return p1 + '+' + p2  # outer
+
 # Converts radio button value to merge type str
 merge_types = {0: 'inner', 1: 'outer', 2: 'left', 3: 'right'}
 

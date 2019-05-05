@@ -1,0 +1,304 @@
+Artist,Album,Name
+Aer,The Bright Side,Floats My Boat
+Aer,The Bright Side,Songbird
+Aer,The Reach,Come and Go
+Aer,The Reach,Feel I Bring
+Aer,The Reach,Somewhere I Been
+Aer,,Take it Wrong
+Aerosmith,Aerosmith,Make It
+Aerosmith,Aerosmith,Somebody
+Aerosmith,Aerosmith,Dream On
+Aerosmith,Aerosmith,One Way Street
+Aerosmith,Aerosmith,Mama Kin
+Aerosmith,Aerosmith,Write Me a Letter
+Aerosmith,Aerosmith,Movin' Out
+Aerosmith,Aerosmith,Walkin' The Dog
+The Beatles,Abbey Road,Come Together
+The Beatles,White Album,Back in the U.S.S.R.
+The Beatles,White Album,Dear Prudence
+The Beatles,White Album,Glass Onion
+The Beatles,White Album,While My Guitar Gently Weeps
+The Beatles,White Album,Happiness Is a Warm Gun
+The Beatles,White Album,Blackbird
+Chicago,The Very Best of: 40th Anniversary Collection,Make Me Smile
+Creedence Clearwater Revival,Creedence Clearwater Revival,Bad Moon Rising
+Creedence Clearwater Revival,Creedence Clearwater Revival,Down On The Corner
+Creedence Clearwater Revival,Creedence Clearwater Revival,Who'll Stop The Rain
+Creedence Clearwater Revival,Creedence Clearwater Revival,Lookin' Out My Back Door
+Creedence Clearwater Revival,Creedence Clearwater Revival,Long As I Can See The Light
+Creedence Clearwater Revival,Creedence Clearwater Revival,Have You Ever Seen The Rain
+"Crosby, Stills, Nash & Young","Greatest Hits: Crosby, Stills, Nash & Young",Southern Cross
+"Crosby, Stills, Nash & Young",So Far,Helplessly Hoping
+"Crosby, Stills, Nash & Young",4 Way Street,Love the One You're With
+"Crosby, Stills, Nash & Young",,Woodstock
+The Doors,The Doors,Break On Through (To The Other Side)
+The Doors,The Doors,Soul Kitchen
+The Doors,The Doors,The Crystal Ship
+The Doors,The Doors,Twentieth Century Fox
+The Doors,The Doors,Alabama Song (Whisky Bar)
+The Doors,The Doors,Light My Fire
+The Doors,The Doors,Back Door Man
+The Doors,The Doors,I Looked At You
+The Doors,The Doors,End Of The Night
+The Doors,The Doors,Take It As It Comes
+The Doors,The Doors,The End
+Doors,Waiting for the Sun,"Hello, I Love You"
+DRUGS,The Prescription For Mis-America,Jealousy
+DRUGS,The Prescription For Mis-America,Mis-America
+DRUGS,The Prescription For Mis-America,Breathe
+DRUGS,The Prescription For Mis-America,Deep Down in the Dumps
+DRUGS,The Prescription For Mis-America,Strangest Life
+DRUGS,The Prescription For Mis-America,I Wonder If
+DRUGS,The Prescription For Mis-America,Freedom Came
+DRUGS,The Prescription For Mis-America,Cold Hearted World
+DRUGS,The Prescription For Mis-America,Grace
+The Eagles,Hotel California,Hotel California
+The Eagles,The Long Run,I Can't Tell You Why
+The Eagles,Their Greatest Hits,Take It Easy
+The Eagles,Their Greatest Hits,Tequila Sunrise
+The Eagles,Their Greatest Hits,Take It To The Limit
+The Eagles,Their Greatest Hits,Peaceful Easy Feeling
+Funkadelic,Free Your Mind... And Your Ass Will Follow,Free Your Mind and Your Ass Will Follow
+Funkadelic,Free Your Mind... And Your Ass Will Follow,"Friday Night, August 14th"
+Funkadelic,Funkadelic,Good Old Music
+Funkadelic,Funkadelic,Music For My Mother
+Funkadelic,Maggot Brain,Maggot Brain
+Funkadelic,One Nation Under A Groove,One Nation Under A Groove
+Funkadelic,One Nation Under A Groove,Groovallegiance
+Funkadelic,One Nation Under A Groove,Who Says A Funk Band Can't Play Rock?!
+Grateful Dead,American Beauty,Box of Rain
+Grateful Dead,American Beauty,Friend of the Devil
+Grateful Dead,American Beauty,Sugar Magnolia
+Grateful Dead,American Beauty,Operator
+Grateful Dead,American Beauty,Candyman
+Grateful Dead,American Beauty,Ripple
+Grateful Dead,American Beauty,Brokedown Palace
+Grateful Dead,American Beauty,Till the Morning Comes
+Grateful Dead,American Beauty,Attics of My Life
+Grateful Dead,American Beauty,Truckin'
+Grateful Dead,Blues For Allah,Help On The Way / Slipknot!
+Grateful Dead,Dead Set (CD1),Fire On The Mountain
+Grateful Dead,Grateful Dead From The Mars Hotel,Scarlet Begonias
+Grateful Dead,In The Dark,Touch Of Grey
+Grateful Dead,Live/Dead,Dark Star
+Grateful Dead,Reckoning (CD2),Ripple (Alternative Live Version)
+Grateful Dead,Terrapin Station,Terrapin Station
+Grateful Dead,Workingman's Dead,Uncle John's Band
+Grateful Dead,Workingman's Dead,High Time
+Grateful Dead,Workingman's Dead,Dire Wolf
+Grateful Dead,Workingman's Dead,New Speedway Boogie
+Grateful Dead,Workingman's Dead,Cumberland Blues
+Grateful Dead,Workingman's Dead,Black Peter
+Grateful Dead,Workingman's Dead,Easy Wind
+Grateful Dead,Workingman's Dead,Casey Jones
+Grizzly Bear,Shields,Gun Shy
+Grizzly Bear,Shields,"Ready, Able [Official Music Video]"
+Guns N' Roses,Use Your Illusion II,Civil War
+Guns N' Roses,Use Your Illusion II,Knocking On Heaven's Door
+Jimi Hendrix,Band of Gypsys,Who Knows
+Jimi Hendrix,Band of Gypsys,Machine Gun
+Jimi Hendrix,Blues,Hear My Train A Comin' (Electric)
+Jimi Hendrix,Jimi Hendrix: Woodstock,Villanova Junction Blues
+Jimi Hendrix,Jimi Plays Monterey,Like A Rolling Stone
+Jimi Hendrix,"People, Hell and Angels",Easy Blues
+Jimi Hendrix,"People, Hell and Angels",Somewhere
+Jimi Hendrix,Posthumous Hendrix Single,All Along The Watch Tower (Acoustic Version)
+John Lennon,Imagine,Imagine
+Led Zeppelin,Houses of the Holy,The Song Remains the Same
+Led Zeppelin,Houses of the Holy,The Rain Song
+Led Zeppelin,Houses of the Holy,Over the Hills and Far Away
+Led Zeppelin,Houses of the Holy,D'yer Mak'er
+Led Zeppelin,Houses of the Holy,No Quarter
+Led Zeppelin,Houses of the Holy,The Ocean
+Led Zeppelin,In Through the Out Door,In The Evening
+Led Zeppelin,In Through The Out Door,Fool In The Rain
+Led Zeppelin,In Through The Out Door,All My Love
+Led Zeppelin,Led Zeppelin I,Good Times Bad Times
+Led Zeppelin,Led Zeppelin I,Babe I'm Gonna Leave You
+Led Zeppelin,Led Zeppelin I,You Shook Me
+Led Zeppelin,Led Zeppelin I,Dazed and Confused
+Led Zeppelin,Led Zeppelin I,Your Time Is Gonna Come
+Led Zeppelin,Led Zeppelin I,Black Mountain Side
+Led Zeppelin,Led Zeppelin I,Communication Breakdown
+Led Zeppelin,Led Zeppelin I,I Can't Quit You Babe
+Led Zeppelin,Led Zeppelin I,How Many More Times
+Led Zeppelin,Led Zeppelin II,Whole Lotta Love
+Led Zeppelin,Led Zeppelin II,What Is and What Should Never Be
+Led Zeppelin,Led Zeppelin II,The Lemon Song
+Led Zeppelin,Led Zeppelin II,Thank You
+Led Zeppelin,Led Zeppelin II,Heartbreaker
+Led Zeppelin,Led Zeppelin II,Living Loving Maid (She's Just a Woman)
+Led Zeppelin,Led Zeppelin II,Ramble On
+Led Zeppelin,Led Zeppelin II,Moby Dick
+Led Zeppelin,Led Zeppelin II,Bring It on Home
+Led Zeppelin,Led Zeppelin III,The Immigrant Song
+Led Zeppelin,Led Zeppelin III,Friends
+Led Zeppelin,Led Zeppelin III,Celebration Day
+Led Zeppelin,Led Zeppelin III,Since I've Been Loving You
+Led Zeppelin,Led Zeppelin III,Out On The Tiles
+Led Zeppelin,Led Zeppelin III,Gallows Pole
+Led Zeppelin,Led Zeppelin III,Tangerine
+Led Zeppelin,Led Zeppelin III,That's The Way
+Led Zeppelin,Led Zeppelin III,Bron-Y-Aur Stomp
+Led Zeppelin,Led Zeppelin III,Hats Off To (Roy) Harper
+Led Zeppelin,Led Zeppelin IV,Black Dog
+Led Zeppelin,Led Zeppelin IV,Rock And Roll
+Led Zeppelin,Led Zeppelin IV,The Battle Of Evermore
+Led Zeppelin,Led Zeppelin IV,Stairway To Heaven
+Led Zeppelin,Led Zeppelin IV,Misty Mountain Hop
+Led Zeppelin,Led Zeppelin IV,Four Sticks
+Led Zeppelin,Led Zeppelin IV,Going To California
+Led Zeppelin,Led Zeppelin IV,When The Levee Breaks
+Led Zeppelin,Physical Graffiti,Custard Pie
+Led Zeppelin,Physical Graffiti,The Rover
+Led Zeppelin,Physical Graffiti,In My Time of Dying
+Led Zeppelin,Physical Graffiti,Houses Of The Holy
+Led Zeppelin,Physical Graffiti,Kashmir
+Led Zeppelin,Physical Graffiti,In The Light
+Led Zeppelin,Physical Graffiti,Bron - Yr
+Led Zeppelin,Physical Graffiti,Down By The Seaside
+Led Zeppelin,Physical Graffiti,Ten Years Gone
+Led Zeppelin,Physical Graffiti,Night Flight
+Led Zeppelin,Physical Graffiti,The Wanton Song
+Led Zeppelin,Physical Graffiti,Boogie With Stu
+Led Zeppelin,Physical Graffiti,Black Country Woman
+Led Zeppelin,Physical Graffiti,Sick Again
+MGMT,Oracular Spectacular,Time to Pretend
+MGMT,Oracular Spectacular,Weekend Wars
+MGMT,Oracular Spectacular,The Youth
+MGMT,Oracular Spectacular,Electric Feel
+MGMT,Oracular Spectacular,Kids
+MGMT,Oracular Spectacular,4th Dimensional Transition
+MGMT,Oracular Spectacular,Pieces of What
+MGMT,Oracular Spectacular,"Of Moons, Birds & Monsters"
+MGMT,Oracular Spectacular,The Handshake
+MGMT,Oracular Spectacular,Future Reflections
+Milky Chance,Sadnecessary,Stunner
+Milky Chance,Sadnecessary,Flashed Junk Mind
+Milky Chance,Sadnecessary,Sadnecessary
+Milky Chance,Sadnecessary,Loveland (Studio Version)
+Milky Chance,Sadnecessary,Feathery (Bonus Track)
+Milky Chance,sadnecessary,Indigo
+Milky Chance,Stolen Dance - Single,Stolen Dance
+Milky Chance,,Down By the River
+Milky Chance,,Sweet Sun
+Nirvana,In Utero,03 Heart-Shaped Box
+Nirvana,Nevermind,Come As You Are
+Nirvana,Nevermind,Lithium
+Nirvana,Nevermind,Smells Like Teen Spirit
+Nirvana,Nevermind,Something In The Way
+Pink Floyd,The Dark Side of the Moon,Speak to Me
+Pink Floyd,The Dark Side of the Moon,Breathe (In the Air)
+Pink Floyd,The Dark Side of the Moon,On the Run
+Pink Floyd,The Dark Side of the Moon,Time
+Pink Floyd,The Dark Side of the Moon,The Great Gig In the Sky
+Pink Floyd,The Dark Side of the Moon,Money
+Pink Floyd,The Dark Side of the Moon,Us and Them
+Pink Floyd,The Dark Side of the Moon,Any Colour You Like
+Pink Floyd,The Dark Side of the Moon,Brain Damage
+Pink Floyd,The Dark Side of the Moon,Eclipse
+Pink Floyd,A Momentary Lapse of Reason,Signs of Life
+Pink Floyd,A Momentary Lapse of Reason,Learning to Fly
+Pink Floyd,A Momentary Lapse of Reason,Dogs of War
+Pink Floyd,A Momentary Lapse of Reason,One Slip
+Pink Floyd,A Momentary Lapse of Reason,On The Turning Away
+Pink Floyd,A Momentary Lapse of Reason,Yet Another Movie/ Round and Around
+Pink Floyd,A Momentary Lapse of Reason,"A New Machine, Part 1"
+Pink Floyd,A Momentary Lapse of Reason,Terminal Frost
+Pink Floyd,A Momentary Lapse of Reason,"A New Machine, Part 2"
+Pink Floyd,A Momentary Lapse of Reason,Sorrow
+Pink Floyd,Obscured by Clouds,Obscured by Clouds
+Pink Floyd,Obscured by Clouds,When You're In
+Pink Floyd,Obscured by Clouds,Burning Bridges
+Pink Floyd,Obscured by Clouds,The Gold It's in the...
+Pink Floyd,Obscured by Clouds,Wots...Uh the Deal
+Pink Floyd,Obscured by Clouds,Mudmen
+Pink Floyd,Obscured by Clouds,Childhood's End
+Pink Floyd,Obscured by Clouds,Free Four
+Pink Floyd,Obscured by Clouds,Stay
+Pink Floyd,Obscured by Clouds,Absolutely Curtains
+Pond,"Beard, Wives, Denim",Eye Pattern Blindness
+Radiohead,Kid A,Everything In Its Right Place
+Radiohead,Kid A,Kid A
+Radiohead,Kid A,The National Anthem
+Radiohead,Kid A,How To Disappear Completely
+Radiohead,Kid A,Treefingers
+Radiohead,Kid A,Optimistic
+Radiohead,Kid A,In Limbo
+Radiohead,Kid A,Idioteque
+Radiohead,Kid A,Morning Bell
+Radiohead,Kid A,Motion Picture Soundtrack
+Red Hot Chili Peppers,The Getaway,The Getaway
+Red Hot Chili Peppers,The Getaway,Dark Necessities
+Red Hot Chili Peppers,The Getaway,We Turn Red
+Red Hot Chili Peppers,The Getaway,The Longest Wave
+Red Hot Chili Peppers,The Getaway,Goodbye Angels
+Red Hot Chili Peppers,The Getaway,Sick Love
+Red Hot Chili Peppers,The Getaway,Go Robot
+Red Hot Chili Peppers,The Getaway,Feasting on the Flowers
+Red Hot Chili Peppers,The Getaway,Detroit
+Red Hot Chili Peppers,The Getaway,This Ticonderoga
+Red Hot Chili Peppers,The Getaway,Encore
+Red Hot Chili Peppers,The Getaway,The Hunter
+Red Hot Chili Peppers,The Getaway,Dreams of a Samurai
+The Rolling Stones,Aftermath,Paint It Black
+The Rolling Stones,Beggars Banquet,Sympathy For The Devil
+The Rolling Stones,Beggars Banquet,No Expectations
+The Rolling Stones,Beggars Banquet,Dear Doctor
+The Rolling Stones,Beggars Banquet,Parachute Woman
+The Rolling Stones,Beggars Banquet,Jig-Saw Puzzle
+The Rolling Stones,Beggars Banquet,Street Fighting Man
+The Rolling Stones,Beggars Banquet,Prodigal Son
+The Rolling Stones,Beggars Banquet,Stray Cat Blues
+The Rolling Stones,Beggars Banquet,Factory Girl
+The Rolling Stones,Beggars Banquet,Salt Of The Earth
+The Rolling Stones,Exile On Main Street,Rocks Off
+The Rolling Stones,Exile On Main Street,Rip This Joint
+The Rolling Stones,Exile On Main Street,Shake Your Hips
+The Rolling Stones,Exile On Main Street,Tumbling Dice
+The Rolling Stones,Exile On Main Street,Torn and Frayed
+The Rolling Stones,Exile On Main Street,Loving Cup
+The Rolling Stones,Exile On Main Street,Happy
+The Rolling Stones,Exile On Main Street,Ventilator Blues
+The Rolling Stones,Exile On Main Street,Shine a Light
+The Rolling Stones,It's Only Rock 'n Roll,Ain't Too Proud To Beg
+The Rolling Stones,It's Only Rock 'n Roll,It's Only Rock 'N Roll (But I Like It)
+Slightly Stoopid,Everything You Need,Officer
+Slightly Stoopid,Everything You Need,Wicked Rebel
+Slightly Stoopid,Everything You Need,Wiseman
+Slightly Stoopid,Everything You Need,Collie Man
+Spoon,Ga Ga Ga Ga Ga,Don't Make Me A Target
+Spoon,Ga Ga Ga Ga Ga,Don't You Evah
+Spoon,Ga Ga Ga Ga Ga,Rhthm & Soul
+Spoon,,Inside Out
+Sticky Fingers,Extended Play,Brother Be
+Sticky Fingers,Extended Play,Willow Tree
+Sticky Fingers,Happy Endings EP,Freaking out
+Sticky Fingers,Happy Endings EP,I Ain't Running
+Sticky Fingers,Happy Endings EP,Hell & Back
+Sticky Fingers,Happy Endings EP,Happy Endings
+Sticky Fingers,Happy Endings EP,Eddy's Song
+Sticky Fingers,Happy Endings EP,Dinner's on You
+Sticky Fingers,Land Of Pleasure,Land Of Pleasure
+Sticky Fingers,Land Of Pleasure,Feast Your Eyes
+Sticky Fingers,Land Of Pleasure,Just For You
+Sticky Fingers,Land Of Pleasure,Rum Rage
+Sticky Fingers,Land Of Pleasure,Gold Snafu
+Sticky Fingers,Land Of Pleasure,Liquorlip Loaded Gun
+Sticky Fingers,Land Of Pleasure,Fake A Smile
+Sticky Fingers,Land Of Pleasure,Snow No Shade
+Sticky Fingers,Land Of Pleasure,If You Go
+Sticky Fingers,Land Of Pleasure,Velvet Skies
+Sticky Fingers,Land Of Pleasure,Dreamland
+Sticky Fingers,Land Of Pleasure,Lazerhead
+Sticky Fingers,Land of Pleasure,Gasoline Can Man
+The Rolling Stones,Let It Bleed,Gimme Shelter
+The Rolling Stones,Let It Bleed,Let It Bleed
+The Rolling Stones,Let It Bleed,You Can't Always Get What You Want
+The Rolling Stones,Unplugged,Sister Morphine
+The Rolling Stones,Unplugged,You Can't Always Get What You Want
+The Rolling Stones,Unplugged,Wild Horses
+The Rolling Stones,Unplugged,Dead Flowers
+Spoon,They Want My Soul,Do You
+The Beatles,Sgt. Pepper's Lonely Hearts Club Band,Lucy in the Sky With Diamonds
+The Beatles,Sgt. Pepper's Lonely Hearts Club Band,A Day in the Life
