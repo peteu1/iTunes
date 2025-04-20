@@ -190,7 +190,7 @@ class Processor:
         
         if how == 'outer':
             # Outer join
-            df = df1.append(df2).reset_index(drop=True)
+            df = df1._append(df2).reset_index(drop=True)
             df.drop_duplicates(inplace=True)
             print("Total unique:", len(df))
         
