@@ -12,7 +12,7 @@ from GUI import Main_GUI
 # Import modules
 import pandas as pd
 import os, ntpath
-
+from datetime import datetime
 
 class Processor:
     
@@ -140,7 +140,10 @@ class Processor:
     
     
     def save(self, output_name, df, overwrite=False):
-        fpath = "output\\{}.txt".format(output_name)
+    
+        # Add timestamp to output filename
+        timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S")
+        fpath = f"output\\{output_name}{timestamp}.txt"
         
         valid = self._verify()
         if not valid:

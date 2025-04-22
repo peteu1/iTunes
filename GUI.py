@@ -265,12 +265,12 @@ class Main_GUI:
     
     
     def init_addFrame(self):
-        label_1 = tk.Label(self.addFrame, fg="green", bg="black",
-                           text="Highlight a playlist and press add --->")
+        label_1 = tk.Label(self.addFrame, fg="black",
+                           text="Select a playlist to add for comparison.", padx=10, pady=5)
         label_1.pack(side=tk.LEFT)
-        add_button = tk.Button(self.addFrame, text="Add", fg="red", 
-                               command=self.add)
-        add_button.pack(side=tk.LEFT)
+        add_button = tk.Button(self.addFrame, text="Add", fg="#FFFFFF", bg="#27AE60",
+                               command=self.add, padx=10)
+        add_button.pack(side=tk.LEFT, padx=5)
         remove_button = tk.Button(self.addFrame, text="Remove", fg="red", 
                                command=self.remove)
         remove_button.pack(side=tk.LEFT)
