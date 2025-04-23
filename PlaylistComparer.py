@@ -1,15 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr  8 19:39:12 2019
-
-@author: peter
-"""
-
-# Import classes
 from GUI import Main_GUI
-#import config
-
-# Import modules
 import pandas as pd
 import os, ntpath
 from datetime import datetime

@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Apr 24 20:31:06 2019
-
-@author: peter
-"""
-
 from PlaylistComparer import Processor
 import config
 import pandas as pd

@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 23 21:55:18 2019
-
-@author: peter
-"""
-
 import config
-
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
-#import pandas as pd
 
 
 class Main_GUI:
@@ -71,7 +62,6 @@ class Main_GUI:
         
     def add(self):
         """ Passes current selection to processor & updates GUI """
-        # TODO: pass the full path, using self.current_dir
         fName = os.path.join(self.current_dir, self.selection)
         
         # Record the add (if valid)
@@ -167,7 +157,6 @@ class Main_GUI:
     
     def update_playlist_frame(self, playlist_num):
         # Recreate playlist
-        # TODO
         self.playlist_frames[playlist_num] = {'frame': 
             self.create_playlist_frame(playlist_num)}
         

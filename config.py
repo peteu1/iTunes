@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 23 21:59:30 2019
-
-@author: peter
-"""
-
 import os
 from datetime import datetime
 
@@ -18,7 +11,7 @@ def get_size(frame='GUI'):
 
 # path to where all the playlist .txt's are stored (relative)
 wdir = os.getcwd()
-playlists_rel_path = 'playlists'  # TODO: Get this dynamically (settings panel?)
+playlists_rel_path = 'playlists'
 playlists_path = os.path.join(wdir, playlists_rel_path)
 
 
@@ -78,7 +71,7 @@ def populate_tree(tree, df, col_widths):
     for _, row in df.iterrows():
         values = tuple([a if type(a) is not float else "" for a in list(row)])
         tree.insert("", 'end', text="L1", values=values)
-    
+
 
 
 help_path = 'strings/help.txt'
